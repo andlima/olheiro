@@ -1,0 +1,5 @@
+settings.py
+*.pyc
+*.dat
+*.dump
+*.txt
