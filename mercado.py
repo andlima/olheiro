@@ -4,6 +4,7 @@ import itertools
 import pickle
 import bz2
 import json
+import time
 
 import mechanize
 
@@ -11,9 +12,11 @@ import mechanize
 LOGIN_URL = 'https://loginfree.globo.com/login/438'
 URL_MERCADO = ('http://cartolafc.globo.com/mercado/filtrar.json?'
                'page=%d&order_by=preco&status_id=7')
-MERCADO_DUMP = './mercado.dump'
-MERCADO_TXT= './mercado.txt'
+MERCADO_DUMP = 'mercado-%s.dump'
+MERCADO_TXT= 'mercado.txt'
 
+def arquivo_mercado_atual():
+    return MERCADO_DUMP % time.strftime('%Y-%m-%d')
 
 class Cenario:
     def __init__(self):
@@ -144,7 +147,7 @@ def atualiza_mercado():
     paginas = []
 
     try:
-        with open(MERCADO_DUMP, 'r') as f:
+        with open(arquivo_mercado_atual(), 'r') as f:
             paginas.extend(pickle.load(f))
         print 'Cache de mercado encontrado.'
     except IOError:
@@ -170,6 +173,9 @@ def atualiza_mercado():
         br['login-passaporte'] = USERNAME
         br['senha-passaporte'] = bz2.decompress(COMPRESSED_PASSWORD)
 
+        form = list(br.forms())[0]
+        form.click()
+
         r_login = br.submit()
         conteudo = r_login.get_data()
 
@@ -183,7 +189,7 @@ def atualiza_mercado():
 
         print 'Download concluido.'
 
-        f = open(MERCADO_DUMP, 'w')
+        f = open(arquivo_mercado_atual(), 'w')
         pickle.dump(paginas, f)
         f.close()
 
