@@ -3,3 +3,4 @@ settings.py
 *.dat
 *.dump
 *.txt
+*.cfg

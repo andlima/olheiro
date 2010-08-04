@@ -5,6 +5,7 @@ import pickle
 import bz2
 import json
 import time
+from ConfigParser import ConfigParser
 
 import mechanize
 
@@ -14,9 +15,11 @@ URL_MERCADO = ('http://cartolafc.globo.com/mercado/filtrar.json?'
                'page=%d&order_by=preco&status_id=7')
 MERCADO_DUMP = 'mercado-%s.dump'
 MERCADO_TXT= 'mercado.txt'
+ARQUIVO_CONFIG = 'mercado.cfg'
 
 def arquivo_mercado_atual():
     return MERCADO_DUMP % time.strftime('%Y-%m-%d')
+
 
 class Cenario:
     def __init__(self):
@@ -143,7 +146,24 @@ class Jogador:
                                          repr(self.clube))
 
 
-def atualiza_mercado():
+def get_user_and_password():
+    config = ConfigParser()
+
+    if config.read(ARQUIVO_CONFIG):
+        print 'Utilizando arquivo de configuracao "%s".' % ARQUIVO_CONFIG
+        username = config.get('DEFAULT', 'username')
+        compressed = eval(config.get('DEFAULT', 'compressed_password'))
+        password = bz2.decompress(compressed)
+    else:
+        username = None
+        password = None
+
+    return username, password
+
+
+def busca_mercado():
+    '''Busca as informacoes de cenario de mercado.'''
+    
     paginas = []
 
     try:
@@ -155,23 +175,19 @@ def atualiza_mercado():
 
         br = mechanize.Browser()
 
-        try:
-            from settings import USERNAME
-            from settings import COMPRESSED_PASSWORD
-            print "Arquivo 'settings.py' encontrado."
-        except ImportError:
+        username, password = get_user_and_password()
+        if not username:
+            username = raw_input(' - Login: ')
+        if not password:
             from getpass import getpass
-            print "Arquivo 'settings.py' nao encontrado..."
-            print 'Entre com o login e a senha do Cartola FC.'
-            USERNAME = raw_input(' - Login: ')
-            COMPRESSED_PASSWORD = bz2.compress(getpass(' - Senha: '))
+            password = getpass(' - Senha: ')
 
         print 'Iniciando download das informacoes de mercado...'
 
         br.open(LOGIN_URL)
         br.select_form(nr=0)
-        br['login-passaporte'] = USERNAME
-        br['senha-passaporte'] = bz2.decompress(COMPRESSED_PASSWORD)
+        br['login-passaporte'] = username
+        br['senha-passaporte'] = password
 
         form = list(br.forms())[0]
         form.click()
@@ -186,8 +202,6 @@ def atualiza_mercado():
             data = json.JSONDecoder().decode(pagina)
             if data['page']['atual'] == data['page']['total']:
                 break
-
-        print 'Download concluido.'
 
         f = open(arquivo_mercado_atual(), 'w')
         pickle.dump(paginas, f)
@@ -207,7 +221,7 @@ def atualiza_mercado():
 
 
 if __name__ == '__main__':
-    cenario = atualiza_mercado()
+    cenario = busca_mercado()
 
     f = open(MERCADO_TXT, 'w')
     for jogador in cenario.jogadores:
