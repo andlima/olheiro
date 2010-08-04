@@ -22,10 +22,14 @@ def arquivo_mercado_atual():
 
 
 class Cenario:
-    def __init__(self):
+    def __init__(self, mercado=None):
         self.clubes = []
         self.jogadores = []
         self.partidas = []
+        if mercado:
+            for item in mercado:
+                self.jogadores.append(Jogador(item, self))
+                self.add_partida(Partida(item))
 
     def get_clube_by_id(self, id_):
         candidates = [clube
@@ -147,6 +151,8 @@ class Jogador:
 
 
 def get_user_and_password():
+    '''Busca por usuario e senha em um arquivo de configuracao.'''
+    
     config = ConfigParser()
 
     if config.read(ARQUIVO_CONFIG):
@@ -162,15 +168,20 @@ def get_user_and_password():
 
 
 def busca_mercado():
-    '''Busca as informacoes de cenario de mercado.'''
+    '''Busca as informacoes de um cenario atual de mercado.'''
     
     paginas = []
 
     try:
+        # Busca por dump do mercado atualizado.
+
         with open(arquivo_mercado_atual(), 'r') as f:
             paginas.extend(pickle.load(f))
         print 'Cache de mercado encontrado.'
+
     except IOError:
+        # Caso nao ache o dump, faz download do site.
+
         print 'Cache de mercado nao encontrado...'
 
         br = mechanize.Browser()
@@ -184,6 +195,7 @@ def busca_mercado():
 
         print 'Iniciando download das informacoes de mercado...'
 
+        # Procedimento de login, utilizando mechanize.
         br.open(LOGIN_URL)
         br.select_form(nr=0)
         br['login-passaporte'] = username
@@ -195,34 +207,37 @@ def busca_mercado():
         r_login = br.submit()
         conteudo = r_login.get_data()
 
+        # Faz download de todas as paginas de informacao de mercado
+        # dos atletas e treinadores provaveis para a rodada seguinte.
+        # As paginas estao no formato JSON.
         for n in itertools.count(1):
             r_mercado = br.open(URL_MERCADO % n)
             pagina = str(r_mercado.get_data())
             paginas.append(pagina)
             data = json.JSONDecoder().decode(pagina)
             if data['page']['atual'] == data['page']['total']:
+                # Sai do loop apos obter a ultima pagina.
                 break
 
+        # Faz dump do mercado atualizado, com todas as paginas.
         f = open(arquivo_mercado_atual(), 'w')
         pickle.dump(paginas, f)
         f.close()
+
 
     mercado = []
     for pagina in paginas:
         data = json.JSONDecoder().decode(pagina)
         mercado.extend(data[u'atleta'])
 
-    cenario = Cenario()
-    for item in mercado:
-        cenario.jogadores.append(Jogador(item, cenario))
-        cenario.add_partida(Partida(item))
-
-    return cenario
+    # Retorna um cenario com as informacoes atualizadas do mercado.
+    return Cenario(mercado)
 
 
 if __name__ == '__main__':
     cenario = busca_mercado()
 
+    # Grava as informacoes dos jogadores de maneira tabelada.
     f = open(MERCADO_TXT, 'w')
     for jogador in cenario.jogadores:
         f.write(jogador.imprime().encode('iso-8859-1')+'\n')
