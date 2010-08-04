@@ -80,7 +80,7 @@ def ident(j):
     return ("'%s : %s'" % (j.apelido, j.clube.slug)).encode('iso-8859-1')
 
 if __name__ == '__main__':
-    cenario = mercado.atualiza_mercado()
+    cenario = mercado.busca_mercado()
 
     data = {}
 
