@@ -132,10 +132,9 @@ class Jogador:
 
     def imprime(self):
         elementos = []
-        elementos.append(str(self.id))
-        elementos.append(self.apelido)
-        elementos.append(self.clube.abreviacao)
+        elementos.append(self.clube.slug)
         elementos.append(self.posicao)
+        elementos.append(self.apelido)
         elementos.append('%d' % self.jogos)
         elementos.append('%.2f' % self.preco)
         elementos.append('%.2f' % self.variacao)
