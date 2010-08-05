@@ -27,7 +27,7 @@ import mechanize
 
 LOGIN_URL = 'https://loginfree.globo.com/login/438'
 URL_MERCADO = ('http://cartolafc.globo.com/mercado/filtrar.json?'
-               'page=%d&order_by=preco&status_id=7')
+               'page=%d&order_by=preco')
 MERCADO_DUMP = 'mercado-%s.dump'
 MERCADO_TXT= 'mercado.txt'
 ARQUIVO_CONFIG = 'mercado.cfg'

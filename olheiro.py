@@ -82,6 +82,8 @@ def identify(j):
 if __name__ == '__main__':
     cenario = mercado.busca_mercado()
 
+    print ('Filtrando apenas jogadores com status provavel e '
+           'pelo menos tres jogos.')
     cenario.jogadores = [j for j in cenario.jogadores
                          if (j.status_id == 7 and
                              j.jogos >= 3)]
