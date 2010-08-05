@@ -76,23 +76,27 @@ def gravaParametro(arq, nome, conteudo, default_=None):
         arq.write('\n')
     arq.write(';\n')
 
-def ident(j):
+def identify(j):
     return ("'%s : %s'" % (j.apelido, j.clube.slug)).encode('iso-8859-1')
 
 if __name__ == '__main__':
     cenario = mercado.busca_mercado()
 
+    cenario.jogadores = [j for j in cenario.jogadores
+                         if (j.status_id == 7 and
+                             j.jogos >= 3)]
+
     data = {}
 
-    data['S_Jogadores'] = [ident(j) for j in cenario.jogadores]
+    data['S_Jogadores'] = [identify(j) for j in cenario.jogadores]
     data['S_Posicoes'] = list(set("'%s'" % j.posicao
                                   for j in cenario.jogadores))
     data['S_Formacoes'] = ["'%s'" % f for f in FORMACOES.keys()]
 
     data['P_Patrimonio'] = [(raw_input('Patrimonio: '),)]
-    data['P_Preco'] = [(ident(j), j.preco) for j in cenario.jogadores]
-    data['P_Media'] = [(ident(j), j.media) for j in cenario.jogadores]
-    data['Pe_Posicao'] = [(ident(j), j.posicao) for j in cenario.jogadores]
+    data['P_Preco'] = [(identify(j), j.preco) for j in cenario.jogadores]
+    data['P_Media'] = [(identify(j), j.media) for j in cenario.jogadores]
+    data['Pe_Posicao'] = [(identify(j), j.posicao) for j in cenario.jogadores]
     data['P_Quantidade'] = [
         ("'%s'" % f, "'%s'" % p, FORMACOES[f][p])
         for p in FORMACOES[f].keys()

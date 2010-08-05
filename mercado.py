@@ -1,5 +1,20 @@
 #!/usr/bin/python
 
+# Autor: Andre Lima
+
+'''
+Este modulo eh responsavel por obter e armazenar as informacoes relativas
+ao cenario atual do mercado de jogadores e tecnicos do Cartola FC.
+
+Ele disponibiliza o metodo busca_mercado(), que verifica se existe um dump
+atual das informacoes; caso nao exista, ele tenta obter as informacoes e
+salva-lo. A funcao retorna uma instancia da Classe cenario, que agrega
+informacoes como clubes, jogadores e partidas da rodada atual.
+
+Quando chamado diretamente, o modulo escreve as informacoes do cenario
+construido num arquivo texto em formato tabulado.
+'''
+
 import itertools
 import pickle
 import bz2
@@ -18,6 +33,11 @@ MERCADO_TXT= 'mercado.txt'
 ARQUIVO_CONFIG = 'mercado.cfg'
 
 def arquivo_mercado_atual():
+    '''
+    Retorna nome do arquivo que armazena o dump das informacoes
+    de mercado relativas ao dia atual.
+    '''
+
     return MERCADO_DUMP % time.strftime('%Y-%m-%d')
 
 
@@ -122,6 +142,7 @@ class Jogador:
         clube = Clube(data['clube'])
         cenario.add_clube(clube)
         self.clube = clube
+        self.status_id = data['status_id']
         self.posicao = data['posicao']['abreviacao']
         self.jogos = int(data['jogos'])
         self.preco = float(data['preco'])
