@@ -1,9 +1,9 @@
-olheiro - Otimizador da escalação para o Cartola SportTV[1].
+olheiro - Otimizador da escalação para o Cartola SportTV[1][2].
 
 Dados um patrimônio (máximo gasto possível com jogadores e técnico) e
 um cenário atual de mercado (preços, médias de pontuação) e de próximas
-partidas da rodada, o otimizador define uma escalação compatível com o
-dado patrimônio que maximize a pontuação média do time.
+partidas da rodada, o otimizador define uma escalação, compatível com o
+dado patrimônio, que maximize a pontuação média do time.
 
 AUTOR
 - André Lima: andre (ponto) lima (arroba) gmail (ponto) com
@@ -13,5 +13,6 @@ REQUISITOS
 - Python Package: mechanize 0.1.11
 - GLPK 4.38
 
-[1] http://cartolafc.globo.com - © Copyright 2010 - SporTV
-    Todos os direitos reservados.
+[1] http://cartolafc.globo.com
+
+[2] Este software não tem qualquer relação com o Cartola SportTV.
