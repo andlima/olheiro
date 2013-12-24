@@ -10,7 +10,7 @@ GLPSOL_EXEC = 'glpsol -m %s -d %s' % (ARQUIVO_MOD, ARQUIVO_DAT)
 LISTA_CONJUNTOS = ['S_Jogadores', 'S_Posicoes', 'S_Formacoes']
 LISTA_PARAMETROS = ['P_Patrimonio', 'P_Preco', 'P_Media',
                     'Pe_Posicao', 'P_Quantidade']
-DEFAULT = {'P_Patrimonio': 0.0, 'P_Preco': 0.0, 
+DEFAULT = {'P_Patrimonio': 0.0, 'P_Preco': 0.0,
            'P_Media': 0.0, 'P_Quantidade': 0.0}
 FORMACOES = {
     '343': {
@@ -59,22 +59,24 @@ def gravaConjunto(arq, nome, conteudo):
     _conteudo = ' '.join(map(lambda z: str(z), conteudo))
     arq.write('set %s := %s;\n' % (nome, _conteudo))
 
+
 def gravaParametro(arq, nome, conteudo, default_=None):
     '''Grava o conteudo de um parametro no formato DAT;
     o parametro que pode ou nao ter um valor
     default (argumento 'default_').'''
-    
+
     arq.write('param %s ' % nome)
     if default_ is not None:
         arq.write('default %s ' % str(default_))
     arq.write(':= \n')
-    
+
     for item in conteudo:
         arq.write('    ')
         for i in item:
             arq.write('%s ' % str(i))
         arq.write('\n')
     arq.write(';\n')
+
 
 def identify(j):
     return ("'%s : %s'" % (j.apelido, j.clube.slug)).encode('iso-8859-1')
@@ -103,7 +105,7 @@ if __name__ == '__main__':
         ("'%s'" % f, "'%s'" % p, FORMACOES[f][p])
         for p in FORMACOES[f].keys()
         for f in FORMACOES.keys()]
-    
+
     arq = open(ARQUIVO_DAT, 'w')
     for conj in LISTA_CONJUNTOS:
         gravaConjunto(arq, conj, data.get(conj, []))
@@ -116,8 +118,7 @@ if __name__ == '__main__':
 
     skip = True
     for linha in output:
-        if ('Model has been successfully '
-            'processed') in linha:
+        if 'Model has been successfully processed' in linha:
             break
         if 'Resultado da otimizacao' in linha:
             skip = False

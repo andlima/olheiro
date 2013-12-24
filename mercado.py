@@ -29,8 +29,9 @@ LOGIN_URL = 'https://loginfree.globo.com/login/438'
 URL_MERCADO = ('http://cartolafc.globo.com/mercado/filtrar.json?'
                'page=%d&order_by=preco')
 MERCADO_DUMP = 'mercado-%s.dump'
-MERCADO_TXT= 'mercado.txt'
+MERCADO_TXT = 'mercado.txt'
 ARQUIVO_CONFIG = 'mercado.cfg'
+
 
 def arquivo_mercado_atual():
     '''
@@ -132,7 +133,7 @@ class Partida:
                    self.quando)
 
     def __repr__(self):
-        return '<Partida %s>' % std(self.id)
+        return '<Partida %s>' % str(self.id)
 
 
 class Jogador:
@@ -172,7 +173,7 @@ class Jogador:
 
 def get_user_and_password():
     '''Busca por usuario e senha em um arquivo de configuracao.'''
-    
+
     config = ConfigParser()
 
     if config.read(ARQUIVO_CONFIG):
@@ -189,7 +190,7 @@ def get_user_and_password():
 
 def busca_mercado():
     '''Busca as informacoes de um cenario atual de mercado.'''
-    
+
     paginas = []
 
     try:
@@ -225,7 +226,7 @@ def busca_mercado():
         form.click()
 
         r_login = br.submit()
-        conteudo = r_login.get_data()
+        r_login.get_data()
 
         # Faz download de todas as paginas de informacao de mercado
         # dos atletas e treinadores provaveis para a rodada seguinte.
@@ -243,7 +244,6 @@ def busca_mercado():
         f = open(arquivo_mercado_atual(), 'w')
         pickle.dump(paginas, f)
         f.close()
-
 
     mercado = []
     for pagina in paginas:
